@@ -25,7 +25,7 @@ public func goalTest(ml: MazeLocation) -> Bool {
 
 
 public func successorsForMaze(_ maze: Maze) -> (MazeLocation) -> [MazeLocation] {
-    func successors(ml: MazeLocation) -> [MazeLocation] { //no  diagonals
+    func successors(ml: MazeLocation) -> [MazeLocation] {
         var newMLs: [MazeLocation] = [MazeLocation]()
         if (ml.row + 1 < maze.count) && (maze[ml.row + 1][ml.col] != .Blocked) {
             newMLs.append(MazeLocation(row: ml.row + 1, col: ml.col))
@@ -58,8 +58,7 @@ public func == <T>(lhs: Node<T>, rhs: Node<T>) -> Bool {
 
 public func nodeToPath<StateType>(_ node: Node<StateType>) -> [StateType] {
     var path: [StateType] = [node.state]
-    var node = node // local modifiable copy of reference
-    // work backwards from end to front
+    var node = node
     while let currentNode = node.parent {
         path.insert(currentNode.state, at: 0)
         node = currentNode
@@ -75,9 +74,6 @@ public func markMaze(_ maze: inout Maze, path: [MazeLocation], start: MazeLocati
     maze[goal.row][goal.col] = .Goal
 }
 
-
-//Heuristics
-
 public func euclideanDistance(ml: MazeLocation) -> Float {
     let xdist = ml.col - goal.col
     let ydist = ml.row - goal.row
@@ -90,27 +86,21 @@ public func manhattanDistance(ml: MazeLocation) -> Float {
     return Float(xdist + ydist)
 }
 
-//a*
-//returns a node containing the goal state
 public func astar<StateType: Hashable>(initialState: StateType, goalTestFn: (StateType) -> Bool, successorFn: (StateType) -> [StateType], heuristicFn: (StateType) -> Float) -> Node<StateType>? {
-    // frontier is where we've yet to go
     var frontier: PriorityQueue<Node<StateType>> = PriorityQueue<Node<StateType>>(ascending: true, startingValues: [Node(state: initialState, parent: nil, cost: 0, heuristic: heuristicFn(initialState))])
-    // explored is where we've been
     var explored = Dictionary<StateType, Float>()
     explored[initialState] = 0
-    // keep going while there is more to explore
+
     while let currentNode = frontier.pop() {
         let currentState = currentNode.state
-        // if we found the goal, we're done
         if goalTestFn(currentState) { return currentNode }
-        // check where we can go next and haven't explored
         for child in successorFn(currentState) {
-            let newcost = currentNode.cost + 1  //1 assumes a grid, there should be a cost function for more sophisticated applications
+            let newcost = currentNode.cost + 1
             if (explored[child] == nil) || (explored[child]! > newcost) {
                 explored[child] = newcost
                 frontier.push(Node(state: child, parent: currentNode, cost: newcost, heuristic: heuristicFn(child)))
             }
         }
     }
-    return nil // never found the goal
+    return nil 
 }

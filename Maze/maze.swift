@@ -7,7 +7,6 @@
 
 import Foundation
 
-// A Cell represents the status of a grid location in the maze
 public enum Cell: Character {
     case Empty = "🟩"
     case Blocked = "🟥"
@@ -29,8 +28,6 @@ public var maze: Maze = [[.Empty,.Blocked,.Empty,.Blocked,.Empty,.Empty,.Empty,.
                          [.Empty,.Blocked,.Blocked,.Empty,.Empty,.Blocked,.Blocked,.Blocked,.Blocked,.Empty],
                          [.Empty,.Empty,.Empty,.Empty,.Empty,.Empty,.Empty,.Empty,.Empty,.Empty]
 ]
-
-
 
 
 public let start = MazeLocation(row: 0, col: 0)
